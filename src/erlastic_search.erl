@@ -30,6 +30,7 @@
         ,search_limit/4
         ,get_doc/3
         ,get_doc/4
+        ,get_doc_opts/5
         ,flush_index/1
         ,flush_index/2
         ,flush_all/0
@@ -234,7 +235,17 @@ get_doc(Index, Type, Id) ->
 %%--------------------------------------------------------------------
 -spec get_doc(record(erls_params), binary(), binary(), binary()) -> {ok, list()} | {error, any()}.
 get_doc(Params, Index, Type, Id) ->
-    erls_resource:get(Params, filename:join([Index, Type, Id]), [], [], Params#erls_params.http_client_options).
+    get_doc_opts(Params, Index, Type, Id, []).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Takes the index and type name and a doc id and sends
+%% it to the Elastic Search server specified in Params.
+%% @end
+%%--------------------------------------------------------------------
+-spec get_doc_opts(record(erls_params), binary(), binary(), binary(), list()) -> {ok, list()} | {error, any()}.
+get_doc_opts(Params, Index, Type, Id, Opts) ->
+    erls_resource:get(Params, filename:join([Index, Type, Id]), [], Opts, Params#erls_params.http_client_options).
 
 flush_index(Index) ->
     flush_index(#erls_params{}, Index).
