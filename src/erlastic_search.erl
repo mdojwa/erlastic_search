@@ -23,6 +23,8 @@
         ,upsert_doc/4
         ,upsert_doc/5
         ,upsert_doc_opts/6
+		,update_script_opts/6
+		,update_script_opts/7
         ,bulk_index_docs/2
         ,search/2
         ,search/3
@@ -166,6 +168,18 @@ upsert_doc(Params, Index, Type, Id, Doc) ->
 upsert_doc_opts(Params, Index, Type, Id, Doc, Opts) when is_list(Doc), is_list(Opts) ->
     erls_resource:post(Params, filename:join([Index, Type, Id, "_update"]), [], Opts,
                        jsx:encode([{<<"doc">>, Doc}, {<<"doc_as_upsert">>, true}]),
+                       Params#erls_params.http_client_options).
+
+-spec update_script_opts(record(erls_params), binary(), binary(), binary(), binary(), list()) -> {ok, list()} | {error, any()}.
+update_script_opts(Params, Index, Type, Id, Script, Opts) when is_list(Script), is_list(Opts) ->
+    erls_resource:post(Params, filename:join([Index, Type, Id, "_update"]), [], Opts,
+                       jsx:encode([{<<"script">>, Script}]),
+                       Params#erls_params.http_client_options).
+
+-spec update_script_opts(record(erls_params), binary(), binary(), binary(), binary(), list(), list()) -> {ok, list()} | {error, any()}.
+update_script_opts(Params, Index, Type, Id, Script, ScriptParams, Opts) when is_list(Script), is_list(Opts) ->
+    erls_resource:post(Params, filename:join([Index, Type, Id, "_update"]), [], Opts,
+                       jsx:encode([{<<"script">>, Script}, {<<"script_params">>, ScriptParams}]),
                        Params#erls_params.http_client_options).
 
 %% Documents is [ {Index, Type, Id, Json}, ... ]
